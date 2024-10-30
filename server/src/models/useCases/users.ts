@@ -27,6 +27,20 @@ export const findOne = async (
         return 'An unexpected error occurred';
     }
 };
+export const findOneById = async (
+    id: string
+): Promise<IUser | null | string> => {
+    try {
+        return (await User.findOne({
+            _id: id,
+        }).lean()) as IUser | null;
+    } catch (error) {
+        if (error instanceof Error) {
+            return error.message;
+        }
+        return 'An unexpected error occurred';
+    }
+};
 
 export const update = async (data: Partial<IUser>) => {
     try {

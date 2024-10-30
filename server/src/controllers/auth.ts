@@ -255,3 +255,49 @@ export const getRefreshToken = async (req: Request, res: Response) => {
         );
     }
 };
+
+export const isValidUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const userData: IUser = (await user.findOneById(id)) as IUser;
+
+        if (!userData) {
+            return res.send(
+                error({
+                    statusCode: responseCodes.notFound,
+                    message: 'User not found',
+                })
+            );
+        }
+        const demoEndDate = new Date(userData.demoEndDate);
+        const currentDate = new Date();
+
+        if (
+            userData.isDemoUser &&
+            userData.demoTime === '7 days' &&
+            demoEndDate < currentDate
+        ) {
+            return res.send(
+                error({
+                    statusCode: responseCodes.unAuthorized,
+                    message: 'Trial expired',
+                })
+            );
+        }
+
+        return res.send(
+            success({
+                message: 'Valid User',
+                statusCode: responseCodes.success,
+            })
+        );
+    } catch (err) {
+        console.log(err);
+        return res.send(
+            error({
+                statusCode: responseCodes.serverError,
+            })
+        );
+    }
+};

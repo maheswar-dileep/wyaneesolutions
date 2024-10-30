@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Request, Response, NextFunction } from 'express';
 import * as user from '../models/useCases/users';
 import { IUser } from '../types/userType';

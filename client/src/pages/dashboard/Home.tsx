@@ -1,6 +1,27 @@
-import { Button } from '../../components/ui/button';
+import { useEffect } from 'react';
+import apiClient from '../../config/apiClient';
+import { ApiResponse } from '../../types/genericResponse';
+import { useRecoilState } from 'recoil';
+import { authState } from '../../state/auth';
+import { errorToast } from '../../utils/errorToast';
 
 const Home = () => {
+    const [userData, setUserData] = useRecoilState(authState);
+
+    useEffect(() => {
+        const isUserValid = async () => {
+            const res: ApiResponse<any> = await apiClient.get(
+                `/auth/is-valid/${userData.id}`
+            );
+            if (res.code === 401) {
+                errorToast('Trial expired');
+                setUserData(null);
+                window.location.reload();
+            }
+            console.log('🚀 ~ isUserValid ~ res:', res);
+        };
+        isUserValid();
+    }, [setUserData, userData]);
     return (
         <div className="bg-gray-900 text-white">
             {/* Hero Section */}

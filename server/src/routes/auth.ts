@@ -26,6 +26,6 @@ router
 router
     .route('/google/login')
     .post(validateData(googleLoginSchema), asyncHandler(auth.googleLogin));
-router.route('/refresh-token').post(asyncHandler(auth.getRefreshToken));
+router.route('/is-valid/:id').get(asyncHandler(auth.isValidUser));
 
 export default router;
