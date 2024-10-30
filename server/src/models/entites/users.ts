@@ -14,6 +14,20 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    isDemoUser: {
+        type: Boolean,
+        default: true,
+        required: true,
+    },
+    demoTime: {
+        type: String,
+        enum: ['1 min', '7 days'],
+        default: '1 min',
+        required: true,
+    },
+    demoEndDate: {
+        type: Date,
+    },
     role: {
         type: String,
         enum: ['ADMIN', 'USER'],

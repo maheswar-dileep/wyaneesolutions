@@ -35,7 +35,6 @@ const Register = () => {
     });
 
     const onRegister = async (data: RegisterFormType) => {
-        console.log('🚀 ~ onRegister ~ data:', data);
         try {
             const res: ApiResponse<null> = await apiClient.post(
                 '/auth/register',
@@ -44,7 +43,7 @@ const Register = () => {
 
             if (res.code === 200) {
                 setAuthState(res.data);
-                return navigate('/login');
+                return navigate('/auth/login');
             }
         } catch (error) {
             console.error('Error during login:', error);

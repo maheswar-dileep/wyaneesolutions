@@ -6,7 +6,8 @@ export interface IUser {
     email: string;
     password: string;
     role?: "USER" | "ADMIN";
-    isActive?: boolean;
-    isDeclined?: boolean;
+    isDemoUser?: boolean;
+    demoTime?: string;
+    demoEndDate?: Date;
     refreshToken?: string;
 }
