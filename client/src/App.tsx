@@ -10,7 +10,7 @@ import { ApiResponse } from './types/genericResponse';
 import { errorToast } from './utils/errorToast';
 
 const App = () => {
-    const [showPopup, setShowPopup] = useState(true);
+    const [showPopup, setShowPopup] = useState(false);
     const [userData] = useRecoilState(authState);
 
     const toggleModal = () => {
