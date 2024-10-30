@@ -14,6 +14,15 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    googleId: {
+        type: String,
+    },
+    authType: {
+        type: String,
+        enum: ['google', 'self'],
+        default: 'self',
+        required: true,
+    },
     isDemoUser: {
         type: Boolean,
         default: true,

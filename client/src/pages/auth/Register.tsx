@@ -18,6 +18,7 @@ import {
 import { RegisterSchema } from '../../schema/AuthSchema';
 import FormInput from '../../components/atomic/FormInput';
 import { ApiResponse } from '../../types/genericResponse';
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 
 type RegisterFormType = z.infer<typeof RegisterSchema>;
 
@@ -39,6 +40,22 @@ const Register = () => {
             const res: ApiResponse<null> = await apiClient.post(
                 '/auth/register',
                 data
+            );
+
+            if (res.code === 200) {
+                setAuthState(res.data);
+                return navigate('/auth/login');
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+        }
+    };
+
+    const onGoogleLogin = async (data: CredentialResponse) => {
+        try {
+            const res: ApiResponse<null> = await apiClient.post(
+                '/auth/google',
+                { token: data.credential }
             );
 
             if (res.code === 200) {
@@ -96,6 +113,14 @@ const Register = () => {
                         />
                     </CardContent>
                     <CardFooter className="flex flex-col gap-2">
+                        <GoogleLogin
+                            onSuccess={(credentialResponse) => {
+                                onGoogleLogin(credentialResponse);
+                            }}
+                            onError={() => {
+                                console.log('Login Failed');
+                            }}
+                        />
                         <Button type="submit" className="w-full">
                             Register
                         </Button>

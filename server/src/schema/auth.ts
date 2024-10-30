@@ -32,3 +32,11 @@ export const userLoginSchema = z.object({
         })
         .min(6, { message: 'Password must be at least 6 characters' }),
 });
+
+export const googleLoginSchema = z.object({
+    token: z
+        .string({
+            required_error: 'token is required',
+        })
+        .min(6, { message: 'token must be at least 6 characters' }),
+});

@@ -1,5 +1,7 @@
+// @ts-nocheck
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
+import { OAuth2Client } from 'google-auth-library';
 
 import * as user from '../models/useCases/users';
 import { success, error } from '../configs/responseConfig';
@@ -10,6 +12,7 @@ import {
     verifyRefreshToken,
 } from '../utils/generateTokens';
 import { IUser } from '../types/userType';
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const createAccount = async (req: Request, res: Response) => {
     try {
@@ -38,6 +41,107 @@ export const createAccount = async (req: Request, res: Response) => {
                 statusCode: responseCodes.success,
                 message: 'User created successfully',
                 data: newUser,
+            })
+        );
+    } catch (err) {
+        return res.send(
+            error({
+                statusCode: responseCodes.serverError,
+            })
+        );
+    }
+};
+
+export const googleSignIn = async (req: Request, res: Response) => {
+    const { token } = req.body;
+
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+
+        const { sub: googleId, email, name } = payload;
+        console.log('🚀 ~ googleSignIn ~ payload:', payload);
+
+        // Find or Create User
+        let userData: any = await user.findOne(email);
+
+        if (!userData) {
+            userData = await user.create({
+                googleId,
+                email,
+                username: name,
+                authType: 'google',
+                password: 'null',
+            });
+        }
+
+        if (!userData) throw new Error('Something went wrong');
+
+        // Create JWT token for session handling
+
+        const accessToken = await generateAccessToken(userData);
+        const refreshToken = await generateRefreshToken(userData);
+
+        return res.send(
+            success({
+                statusCode: responseCodes.success,
+                message: 'User login successful',
+                data: {
+                    accessToken,
+                    refreshToken,
+                    username: userData.username,
+                    email: userData.email,
+                    role: userData.role,
+                    isDemoUser: userData.isDemoUser,
+                    demoTime: userData.demoTime,
+                    id: userData._id,
+                },
+            })
+        );
+    } catch (err) {
+        return res.send(
+            error({
+                statusCode: responseCodes.serverError,
+            })
+        );
+    }
+};
+
+export const googleLogin = async (req: Request, res: Response) => {
+    const { token } = req.body;
+
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+
+        const { email } = payload;
+
+        // Find or Create User
+        let userData: any = await user.findOne(email);
+
+        const accessToken = await generateAccessToken(userData);
+        const refreshToken = await generateRefreshToken(userData);
+
+        return res.send(
+            success({
+                statusCode: responseCodes.success,
+                message: 'User login successful',
+                data: {
+                    accessToken,
+                    refreshToken,
+                    username: userData.username,
+                    email: userData.email,
+                    role: userData.role,
+                    isDemoUser: userData.isDemoUser,
+                    demoTime: userData.demoTime,
+                    id: userData._id,
+                },
             })
         );
     } catch (err) {

@@ -3,14 +3,14 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 import AppRoutes from './config/Routes';
 import Modal from './components/atomic/Modal';
-import { useRecoilState} from 'recoil';
+import { useRecoilState } from 'recoil';
 import { authState } from './state/auth';
 import apiClient from './config/apiClient';
 import { ApiResponse } from './types/genericResponse';
 import { errorToast } from './utils/errorToast';
 
 const App = () => {
-    const [showPopup, setShowPopup] = useState(false);
+    const [showPopup, setShowPopup] = useState(true);
     const [userData] = useRecoilState(authState);
 
     const toggleModal = () => {
@@ -20,7 +20,7 @@ const App = () => {
     useEffect(() => {
         if (userData?.isDemoUser && userData.demoTime !== '7 days') return;
         const timer = setTimeout(() => {
-            setShowPopup(true);k
+            setShowPopup(true);
         }, 60000);
         console.log('Demo time');
 
@@ -33,7 +33,7 @@ const App = () => {
             const res: ApiResponse<any> = await apiClient.post(
                 `/trial/update-trial/${userData._id}`,
                 {
-                    id: userData._id,
+                    id: userData.id,
                 }
             );
 

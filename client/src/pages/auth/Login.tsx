@@ -18,6 +18,8 @@ import {
 import { LoginSchema } from '../../schema/AuthSchema';
 import FormInput from '../../components/atomic/FormInput';
 import { ApiResponse } from '../../types/genericResponse';
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import { errorToast } from '../../utils/errorToast';
 
 type loginFormType = z.infer<typeof LoginSchema>;
 
@@ -39,6 +41,22 @@ const Login = () => {
             const res: ApiResponse<null> = await apiClient.post(
                 '/auth/login',
                 data
+            );
+
+            console.log(res.data, 'updateAuthData');
+            if (res.code === 200) {
+                setAuthState(res.data);
+                return navigate('/dashboard');
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+        }
+    };
+    const onGoogleLogin = async (data: CredentialResponse) => {
+        try {
+            const res: ApiResponse<null> = await apiClient.post(
+                '/auth/google/login',
+                { token: data.credential }
             );
 
             console.log(res.data, 'updateAuthData');
@@ -88,6 +106,14 @@ const Login = () => {
                         />
                     </CardContent>
                     <CardFooter className="flex flex-col gap-2">
+                        <GoogleLogin
+                            onSuccess={(credentialResponse) => {
+                                onGoogleLogin(credentialResponse);
+                            }}
+                            onError={() => {
+                                errorToast('Google login failed');
+                            }}
+                        />
                         <Button type="submit" className="w-full">
                             Login
                         </Button>
