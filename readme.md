@@ -7,14 +7,14 @@ To run this project, you will need to add the following environment variables to
 
 ## CLIENT SIDE
 
-`VITE_APP_BASE_URL = "http://localhost:8081/api/v1"`
+`VITE_APP_BASE_URL = "http://localhost:9091/api/v1"`
 
 `VITE_APP_GOOGLE_CLIENT_ID = "*****************************************"`
 
 
 ## SERVER SIDE
 
-`PORT = 9001`
+`PORT = 9091`
 
 `MONGODB_URL = "*****"`
 
